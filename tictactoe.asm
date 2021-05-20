@@ -147,10 +147,17 @@ ch2     LDA     #49
         SUBR    B,X
         STCH    coldec,X
         
-nch2    LDA     #grdst
+nch2    LDA     #temp0
         LDT     tlen0
         JSUB    printstr
         LDL     disret
+        LDX     #0
+        LDB     clen
+        LDA     #48
+    
+rloop1   STCH    coldec,X
+        TIXR    B
+        JLT     rloop1 
         RSUB   
 disret  RESW    1              
 . ---------------------------------- OUTPUT STRING -------------------------------------
@@ -160,13 +167,16 @@ printstr	STA	out
                 LDX #0
 
 cloop	LDCH	@out    . print each character in string one by one upto length in T.
- AND     #255
-        COMP    #88
-        JEQ     eq
-        COMP    #79
+        LDA     isgrd
+        COMP    #1
         JEQ     eq
         J       neq
-eq      JSUB    setclr
+eq      LDCH    coldec,X
+        AND     #255
+        COMP    #49
+        JEQ     pr
+        J       neq
+pr      JSUB    setclr        
 neq     LDCH    @out
 	WD	#1      . 1 is the device code for STDOUT
         JSUB    remdec
