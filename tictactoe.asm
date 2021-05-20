@@ -3,6 +3,34 @@ xno		START	0
         LDT     testln
         JSUB    grddisp
         J       halt
+.------------------------------------ SET COLOR ---------------------------------------
+
+setclr  STL     scret
+        LDA     #27
+        WD      #1
+        LDA     #color
+        LDT     #7
+        JSUB    printcd 
+        LDL     scret
+        RSUB
+color   BYTE    C'[0m'
+scret   RESW 1
+
+
+remdec  STL     rmret
+        LDA     #27
+        WD      #1
+        LDA     #nodec
+        LDT     #3
+        STL     rmret
+        JSUB    printcd 
+        LDL     rmret
+        RSUB
+nodec   BYTE    C'[0m'
+rmret   RESW    1
+
+
+
 
 . ---------------------------------- GRID DISPLAY -------------------------------------
 
@@ -62,31 +90,46 @@ printstr	STA	out
                 LDX #0
 
 cloop	LDCH	@out    . print each character in string one by one upto length in T.
-	    
-	    WD	    #1      . 1 is the device code for STDOUT
+	JSUB    setclr    
+	WD	#1      . 1 is the device code for STDOUT
         LDA     #1
         ADDR    X, A
         COMPR   A, T
-	    JEQ     return
+	JEQ     return
         RMO     A, X
-        LDA	    out
-	    ADD	    #1
-	    STA	    out
-        J	    cloop
+        LDA	out
+	ADD	#1
+	STA	out
+        J	cloop
 
 return	LDA     #10
         WD      #1
         RSUB
 
 out 	RESW	1
-
-
-
-
-
-
-.092 048 051 051 091 057 053 109
 . ---------------------------------- OUTPUT STRING END -------------------------------------
+. ------------------------------OUTPUT ANSI CODE ---------------------------------------------
+printcd	STA	outx
+                LDX #0
+
+cdloop	LDCH	@outx   . print each character in string one by one upto length in T.
+	    
+	WD	#1      . 1 is the device code for STDOUT
+        LDA     #1
+        ADDR    X, A
+        COMPR   A, T
+	JEQ     ret
+        RMO     A, X
+        LDA	outx
+	ADD	#1
+	STA	outx
+        J	cdloop
+
+ret	RSUB
+
+outx 	RESW	1
+
+. ---------------------------------- OUTPUT ANSI END -------------------------------------
 state   RESB    9    
 test	BYTE	C'\e[1;31m This is red text \e[0m'
 line    BYTE    C'-------------'
