@@ -49,6 +49,7 @@ remdec  LDA     #27
 
 grddisp LDS     #1
         STS     isgrd
+        STL     grdret
         RMO     L,B
         JSUB    linep
         
@@ -68,6 +69,7 @@ grddisp LDS     #1
         JSUB    linep
         LDS     #0
         STS     isgrd
+        LDL     grdret
         RSUB
 
 grdret  RESW    1        
