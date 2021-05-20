@@ -3,6 +3,34 @@ xno		START	0
         LDT     testln
         JSUB    grddisp
         J       halt
+.------------------------------------ SET COLOR ---------------------------------------
+setclr  LDA     #27
+        WD      #1
+        LDA     #91
+        WD      #1
+        LDA     #52
+        WD      #1
+        LDA     #55
+        WD      #1
+        LDA     #59
+        WD      #1
+        LDA     #51
+        WD      #1
+        LDA     #48
+        WD      #1
+        LDA     #109
+        WD      #1
+        RSUB
+
+remdec  LDA     #27
+        WD      #1
+        LDA     #91
+        WD      #1
+        LDA     #48
+        WD      #1
+        LDA     #109
+        WD      #1
+        RSUB
 
 . ---------------------------------- GRID DISPLAY -------------------------------------
 
@@ -59,25 +87,35 @@ disp    LDT     tlen0
 . ---------------------------------- OUTPUT STRING -------------------------------------
 
 printstr	STA	out
+                STL     printstrret
                 LDX #0
 
 cloop	LDCH	@out    . print each character in string one by one upto length in T.
-	    
-	    WD	    #1      . 1 is the device code for STDOUT
+        AND     #255
+        COMP    #88
+        JEQ     eq
+        COMP    #79
+        JEQ     eq
+        J       neq
+eq      JSUB    setclr
+neq     LDCH    @out
+	WD	#1      . 1 is the device code for STDOUT
+        JSUB    remdec
         LDA     #1
         ADDR    X, A
         COMPR   A, T
-	    JEQ     return
+	JEQ     return
         RMO     A, X
-        LDA	    out
-	    ADD	    #1
-	    STA	    out
-        J	    cloop
+        LDA	out
+	ADD	#1
+	STA	out
+        J	cloop
 
 return	LDA     #10
         WD      #1
+        LDL     printstrret
         RSUB
-
+printstrret RESW 1
 out 	RESW	1
 
 
@@ -86,7 +124,7 @@ state   RESB    9
 test	BYTE	C'\e[1;31m This is red text \e[0m'
 line    BYTE    C'-------------'
 temp0   BYTE    C'|   |   |   |'
-grdst   BYTE    C'XOXXOOOOX'    .hard coded for now.
+grdst   BYTE    C'X XXO  OX'    .hard coded for now.
 tlen0   WORD    13
 stlen   WORD    9
 linelen WORD    13
