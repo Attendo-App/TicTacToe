@@ -4,7 +4,134 @@ xno		START	0
         LDA     #test
         LDT     testln
         JSUB    grddisp
+        JSUB    winner
         J       halt
+
+
+.------------------------------------ CHECK FOR WINNER ---------------------------------------
+
+. 0,1,2
+. 0,4,8
+. 0,3,6
+. 2,5,8
+. 2,4,6
+. 6,7,8
+. 3,4,5
+. 1,4,7
+
+winner  LDX     #0         .Check if value in 0 is not blank, and if it is equal to value in 1
+        LDCH    grdst,X
+        COMP    #32
+        JEQ     cond3
+        RMO     A,S
+        LDX     #1
+        LDCH    grdst,X
+        COMPR   A,S
+        JEQ     check1
+cond1   LDX     #0         .Check if value in 0 is equal to value in 4
+        LDCH    grdst,X
+        RMO     A,S
+        LDX     #4
+        LDCH    grdst,X
+        COMPR   A,S
+        JEQ     check2
+cond2   LDX     #0         .Check if value in 0 is equal to value in 3
+        LDCH    grdst,X
+        RMO     A,S
+        LDX     #3
+        LDCH    grdst,X
+        COMPR   A,S
+        JEQ     check3
+cond3   LDX     #2         .Check if value in 2 is not blank, and if it is equal to value in 5
+        LDCH    grdst,X
+        COMP    #32
+        JEQ     cond5
+        RMO     A,S
+        LDX     #5
+        LDCH    grdst,X
+        COMPR   A,S
+        JEQ     check4
+cond4   LDX     #2         .Check if value in 2 is equal to value in 4
+        LDCH    grdst,X
+        RMO     A,S
+        LDX     #4
+        LDCH    grdst,X
+        COMPR   A,S
+        JEQ     check5
+cond5   LDX     #6         .Check if value in 6 is not blank, and if it is equal to value in 7
+        LDCH    grdst,X
+        COMP    #32
+        JEQ     cond6
+        RMO     A,S
+        LDX     #7
+        LDCH    grdst,X
+        COMPR   A,S
+        JEQ     check6
+cond6   LDX     #3         .Check if value in 3 is not blank, and if it is equal to value in 4     
+        LDCH    grdst,X
+        COMP    #32
+        JEQ     cond7
+        RMO     A,S
+        LDX     #4
+        LDCH    grdst,X
+        COMPR   A,S
+        JEQ     check7
+cond7   LDX     #1         .Check if value in 1 is not blank, and if it is equal to value in 4
+        LDCH    grdst,X
+        COMP    #32
+        JEQ     nowin
+        RMO     A,S
+        LDX     #4
+        LDCH    grdst,X
+        COMPR   A,S
+        JEQ     check8
+nowin  LDA      #63        .If there is no winner, return '?'
+       J        winret 
+check1 LDX      #2         .If value in 0 is equal to value in 1, check if it is equal to value in 2
+       LDCH     grdst,X
+       COMPR    A,S
+       JEQ      winret
+       J        cond1
+check2 LDX      #8         .If value in 0 is equal to value in 4, check if it is equal to value in 8
+       LDCH     grdst,X
+       COMPR    A,S
+       JEQ      winret
+       J        cond2
+check3 LDX      #6         .If value in 0 is equal to value in 3, check if it is equal to value in 6
+       LDCH     grdst,X
+       COMPR    A,S
+       JEQ      winret
+       J        cond3
+check4 LDX      #8         .If value in 2 is equal to value in 5, check if it is equal to value in 8
+       LDCH     grdst,X
+       COMPR    A,S
+       JEQ      winret
+       J        cond4
+check5 LDX      #6         .If value in 2 is equal to value in 4, check if it is equal to value in 6
+       LDCH     grdst,X
+       COMPR    A,S
+       JEQ      winret
+       J        cond5
+check6 LDX      #8         .If value in 6 is equal to value in 7, check if it is equal to value in 8
+       LDCH     grdst,X
+       COMPR    A,S
+       JEQ      winret
+       J        cond6
+check7 LDX      #5         .If value in 3 is equal to value in 4, check if it is equal to value in 5 
+       LDCH     grdst,X
+       COMPR    A,S
+       JEQ      winret
+       J        cond7
+check8 LDX      #7         .If value in 1 is equal to value in 4, check if it is equal to value in 7 
+       LDCH     grdst,X
+       COMPR    A,S
+       JEQ      winret
+       J        nowin
+
+winret WD      #1
+       LDA     #10
+       WD      #1  
+       RSUB 
 .------------------------------------ SET ANSI CODE ---------------------------------------
 setclr  LDA     #27
         WD      #1
@@ -206,7 +333,7 @@ test	BYTE	C'\e[1;31m This is red text \e[0m'
 line    BYTE    C'-------------'
 temp0   BYTE    C'|   |   |   |'
 coldec  BYTE    C'0000000000000'
-grdst   BYTE    C'X XXO  OX'    .hard coded for now.
+grdst   BYTE    C'OOXOOXXXX'    .hard coded for now.
 tlen0   WORD    13
 clen    WORD    13
 stlen   WORD    9
