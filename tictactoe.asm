@@ -1,16 +1,74 @@
 xno		START	0
         LDA     #0
         STA     isgrd
-        LDA     #promptx
+        STA     count
+play    LDA     #promptx
         LDT     plen
         JSUB    printstr
         JSUB    rdin
         LDA     #88
         STCH    grdst,X
+        LDA     count
+        ADD     #1
+        STA     count
+        COMP    #5
+        JLT     grid
+        COMP    #9
+        JEQ     final
+        JSUB    winner
+        LDA     #32
+        COMPR   A,S
+        JEQ     grid
+        J       exit
+grid    JSUB    clrscr
+        JSUB    grddisp
+        LDA     #prompto
+        LDT     plen
+        JSUB    printstr
+        JSUB    rdin
+        LDA     #79
+        STCH    grdst,X
+        LDA     count
+        ADD     #1
+        STA     count
+        COMP    #5
+        JLT     grid2
+        COMP    #9
+        JEQ     final
+        JSUB    winner
+        LDA     #32
+        COMPR   A,S
+        JEQ     grid2
+        J       exit
+grid2   JSUB    clrscr
+        JSUB    grddisp
+        J       play
+final   JSUB    clrscr
         JSUB    grddisp
         JSUB    winner
+exit    RMO     S,A
+        COMP    #88
+        JEQ     xwin
+        COMP    #79
+        JEQ     owin
+        LDA     #dstr
+        LDT     dlen
+        JSUB    printstr
         J       halt
-
+xwin    LDA     #xstr
+        LDT     winlen
+        JSUB    printstr
+        J       halt
+owin    LDA     #ostr
+        LDT     winlen
+        JSUB    printstr
+        J       halt
+count   RESW    1
+xstr    BYTE    C'Player X wins!'
+ostr    BYTE    C'Player O wins!'
+dstr    BYTE    C'Draw'
+winlen  WORD    14
+dlen    WORD    4
 .------------------------------------ Handle input ---------------------------------------
 rdin    RD      #0
         STA     temp
@@ -114,7 +172,7 @@ cond7   LDX     #1         .Check if value in 1 is not blank, and if it is equal
         LDCH    grdst,X
         COMPR   A,S
         JEQ     check8
-nowin  LDA      #63        .If there is no winner, return '?'
+nowin  LDA      #32       .If there is no winner, return ' '
        J        winret 
 check1 LDX      #2         .If value in 0 is equal to value in 1, check if it is equal to value in 2
        LDCH     grdst,X
@@ -157,9 +215,7 @@ check8 LDX      #7         .If value in 1 is equal to value in 4, check if it is
        JEQ      winret
        J        nowin
 
-winret WD      #1          .Print winner and return
-       LDA     #10
-       WD      #1  
+winret RMO      A,S     .Move winner to S and return
        RSUB 
 .------------------------------------ SET ANSI CODE ---------------------------------------
 setclr  LDA     #27
@@ -182,11 +238,28 @@ setclr  LDA     #27
 
 clrscr  LDA     #10   . not working for now.
         WD      #1
-        LDA     #10
         WD      #1
-        LDA     #10
         WD      #1
-        LDA     #10
+        WD      #1
+        WD      #1
+        WD      #1
+        WD      #1
+        WD      #1
+        WD      #1
+        WD      #1
+        WD      #1
+        WD      #1
+        WD      #1
+        WD      #1
+        WD      #1
+        WD      #1
+        WD      #1
+        WD      #1
+        WD      #1
+        WD      #1
+        WD      #1
+        WD      #1
+        WD      #1
         WD      #1
         RSUB
 
