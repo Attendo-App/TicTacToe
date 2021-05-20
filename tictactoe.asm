@@ -1,15 +1,44 @@
 xno		START	0
         LDA     #0
         STA     isgrd
-        LDA     #test
-        LDT     testln
+        LDA     #promptx
+        LDT     plen
+        JSUB    printstr
+        JSUB    rdin
+        LDA     #88
+        STCH    grdst,X
         JSUB    grddisp
         JSUB    winner
         J       halt
 
-
+.------------------------------------ Handle input ---------------------------------------
+rdin    RD      #0
+        STA     temp
+        RD      #0
+        LDA     temp
+        STL     rdret
+        COMP    #56
+        JGT     invalid
+        COMP    #48
+        JLT     invalid
+        SUB     #48
+        RMO     A,X
+        LDCH    grdst,X
+        COMP    #32
+        JEQ     valid
+        J       invalid
+valid   LDL     rdret
+        RSUB     
+invalid LDA     #invstr
+        LDT     ilen
+        JSUB    printstr
+        J       rdin
+temp    RESW    1
+rdret   RESW    1
+invstr  BYTE    C'Invalid input,enter again:'
+ilen    WORD    25
 .------------------------------------ CHECK FOR WINNER ---------------------------------------
-
+.Winning conditions: 
 . 0,1,2
 . 0,4,8
 . 0,3,6
@@ -128,7 +157,7 @@ check8 LDX      #7         .If value in 1 is equal to value in 4, check if it is
        JEQ      winret
        J        nowin
 
-winret WD      #1
+winret WD      #1          .Print winner and return
        LDA     #10
        WD      #1  
        RSUB 
@@ -333,9 +362,12 @@ test	BYTE	C'\e[1;31m This is red text \e[0m'
 line    BYTE    C'-------------'
 temp0   BYTE    C'|   |   |   |'
 coldec  BYTE    C'0000000000000'
-grdst   BYTE    C'OOXOOXXXX'    .hard coded for now.
+grdst   BYTE    C'         '    
+promptx BYTE    C'Enter input for X:'
+prompto BYTE    C'Enter input for O:'
 tlen0   WORD    13
 clen    WORD    13
+plen    WORD    18
 stlen   WORD    9
 linelen WORD    13
 testln  WORD    31
