@@ -1,7 +1,6 @@
 xno		START	0
         LDA     #test
         LDT     testln
-        JSUB    setclr
         JSUB    grddisp
         J       halt
 .------------------------------------ SET COLOR ---------------------------------------
@@ -88,17 +87,20 @@ disp    LDT     tlen0
 . ---------------------------------- OUTPUT STRING -------------------------------------
 
 printstr	STA	out
+                STL     printstrret
                 LDX #0
 
 cloop	LDCH	@out    . print each character in string one by one upto length in T.
-        STA     a_bck
-        STX     x_bck
-        STT     t_bck
-.	JSUB    setclr  
-        LDA     a_bck
-        LDX     x_bck
-        LDT     t_bck
+        AND     #255
+        COMP    #88
+        JEQ     eq
+        COMP    #79
+        JEQ     eq
+        J       neq
+eq      JSUB    setclr
+neq     LDCH    @out
 	WD	#1      . 1 is the device code for STDOUT
+        JSUB    remdec
         LDA     #1
         ADDR    X, A
         COMPR   A, T
@@ -111,18 +113,18 @@ cloop	LDCH	@out    . print each character in string one by one upto length in T.
 
 return	LDA     #10
         WD      #1
+        LDL     printstrret
         RSUB
-
-a_bck   RESW    1
-x_bck   RESW    1
-t_bck   RESW    1
+printstrret RESW 1
 out 	RESW	1
+
+
 . ---------------------------------- OUTPUT STRING END -------------------------------------
 state   RESB    9    
 test	BYTE	C'\e[1;31m This is red text \e[0m'
 line    BYTE    C'-------------'
 temp0   BYTE    C'|   |   |   |'
-grdst   BYTE    C'XOXXOOOOX'    .hard coded for now.
+grdst   BYTE    C'X XXO  OX'    .hard coded for now.
 tlen0   WORD    13
 stlen   WORD    9
 linelen WORD    13
