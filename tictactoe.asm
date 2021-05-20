@@ -81,11 +81,6 @@ return	LDA     #10
 out 	RESW	1
 
 
-
-
-
-
-.092 048 051 051 091 057 053 109
 . ---------------------------------- OUTPUT STRING END -------------------------------------
 state   RESB    9    
 test	BYTE	C'\e[1;31m This is red text \e[0m'
