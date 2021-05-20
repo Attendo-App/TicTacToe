@@ -8,7 +8,7 @@ xno		START	0
 
 
 grddisp RMO     L,B
-        JSUB linep
+        JSUB    linep
         
         LDS     #0
         JSUB    disp
@@ -24,7 +24,6 @@ grddisp RMO     L,B
         JSUB    disp
         
         JSUB    linep
-        RMO     B,L
         RSUB
 
 linep   LDT     linelen
