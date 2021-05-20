@@ -1,36 +1,37 @@
 xno		START	0
         LDA     #test
         LDT     testln
+        JSUB    setclr
         JSUB    grddisp
         J       halt
 .------------------------------------ SET COLOR ---------------------------------------
-
-setclr  STL     scret
-        LDA     #27
+setclr  LDA     #27
         WD      #1
-        LDA     #color
-        LDT     #3
-        JSUB    printcd 
-        LDL     scret
-        RSUB
-color   BYTE    C'[0m'
-scret   RESW 1
-
-
-remdec  STL     rmret
-        LDA     #27
+        LDA     #91
         WD      #1
-        LDA     #nodec
-        LDT     #3
-        STL     rmret
-        JSUB    printcd 
-        LDL     rmret
+        LDA     #52
+        WD      #1
+        LDA     #55
+        WD      #1
+        LDA     #59
+        WD      #1
+        LDA     #51
+        WD      #1
+        LDA     #48
+        WD      #1
+        LDA     #109
+        WD      #1
         RSUB
-nodec   BYTE    C'[0m'
-rmret   RESW    1
 
-
-
+remdec  LDA     #27
+        WD      #1
+        LDA     #91
+        WD      #1
+        LDA     #48
+        WD      #1
+        LDA     #109
+        WD      #1
+        RSUB
 
 . ---------------------------------- GRID DISPLAY -------------------------------------
 
@@ -117,28 +118,6 @@ x_bck   RESW    1
 t_bck   RESW    1
 out 	RESW	1
 . ---------------------------------- OUTPUT STRING END -------------------------------------
-. ------------------------------OUTPUT ANSI CODE ---------------------------------------------
-printcd	STA	outx
-                LDX #0
-
-cdloop	LDCH	@outx   . print each character in string one by one upto length in T.
-	    
-	WD	#1      . 1 is the device code for STDOUT
-        LDA     #1
-        ADDR    X, A
-        COMPR   A, T
-	JEQ     ret
-        RMO     A, X
-        LDA	outx
-	ADD	#1
-	STA	outx
-        J	cdloop
-
-ret	RSUB
-
-outx 	RESW	1
-
-. ---------------------------------- OUTPUT ANSI END -------------------------------------
 state   RESB    9    
 test	BYTE	C'\e[1;31m This is red text \e[0m'
 line    BYTE    C'-------------'
