@@ -9,7 +9,7 @@ setclr  STL     scret
         LDA     #27
         WD      #1
         LDA     #color
-        LDT     #7
+        LDT     #3
         JSUB    printcd 
         LDL     scret
         RSUB
@@ -90,7 +90,13 @@ printstr	STA	out
                 LDX #0
 
 cloop	LDCH	@out    . print each character in string one by one upto length in T.
-	JSUB    setclr    
+        STA     a_bck
+        STX     x_bck
+        STT     t_bck
+.	JSUB    setclr  
+        LDA     a_bck
+        LDX     x_bck
+        LDT     t_bck
 	WD	#1      . 1 is the device code for STDOUT
         LDA     #1
         ADDR    X, A
@@ -106,6 +112,9 @@ return	LDA     #10
         WD      #1
         RSUB
 
+a_bck   RESW    1
+x_bck   RESW    1
+t_bck   RESW    1
 out 	RESW	1
 . ---------------------------------- OUTPUT STRING END -------------------------------------
 . ------------------------------OUTPUT ANSI CODE ---------------------------------------------
