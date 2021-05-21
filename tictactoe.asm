@@ -218,13 +218,31 @@ check8 LDX      #7         .If value in 1 is equal to value in 4, check if it is
 winret RMO      A,S     .Move winner to S and return
        RSUB 
 .------------------------------------ SET ANSI CODE ---------------------------------------
-setclr  LDA     #27
+setclrg  LDA     #27
         WD      #1
         LDA     #91
         WD      #1
         LDA     #52
         WD      #1
-        LDA     #55
+        LDA     #50
+        WD      #1
+        LDA     #59
+        WD      #1
+        LDA     #51
+        WD      #1
+        LDA     #48
+        WD      #1
+        LDA     #109
+        WD      #1
+        RSUB
+
+setclrr  LDA     #27
+        WD      #1
+        LDA     #91
+        WD      #1
+        LDA     #52
+        WD      #1
+        LDA     #49
         WD      #1
         LDA     #59
         WD      #1
@@ -326,14 +344,17 @@ rloop   STCH    coldec,X
         LDCH    grdst,X
         LDX     #2
         STCH    temp0,X
+        
         AND     #255
         COMP    #88
-        JEQ     ch
+        JEQ     setx
         COMP    #79
-        JEQ     ch
+        JEQ     seto
         J       nch
-ch      LDA     #49
-        STCH    coldec,X 
+setx    LDA     #49
+        J       ch
+seto    LDA     #50             
+ch      STCH    coldec,X 
         ADDR    B,X 
         STCH    coldec,X
         SUBR    B,X
@@ -347,12 +368,14 @@ nch     LDX     #1
         STCH    temp0,X
         AND     #255
         COMP    #88
-        JEQ     ch1
+        JEQ     setx1
         COMP    #79
-        JEQ     ch1
+        JEQ     seto1
         J       nch1
-ch1     LDA     #49
-        STCH    coldec,X 
+setx1    LDA     #49
+        J       ch1
+seto1    LDA     #50             
+ch1      STCH    coldec,X 
         ADDR    B,X 
         STCH    coldec,X
         SUBR    B,X
@@ -364,14 +387,16 @@ nch1    LDX     #2
         LDCH    grdst,X
         LDX     #10
         STCH    temp0,X
-        AND     #255
+         AND     #255
         COMP    #88
-        JEQ     ch2
+        JEQ     setx2
         COMP    #79
-        JEQ     ch2
+        JEQ     seto2
         J       nch2
-ch2     LDA     #49
-        STCH    coldec,X 
+setx2    LDA     #49
+        J       ch2
+seto2    LDA     #50             
+ch2     STCH    coldec,X 
         ADDR    B,X 
         STCH    coldec,X
         SUBR    B,X
@@ -405,9 +430,13 @@ cloop	LDCH	@out    . print each character in string one by one upto length in T.
 eq      LDCH    coldec,X
         AND     #255
         COMP    #49
-        JEQ     pr
+        JEQ     setr
+        COMP    #50
+        JEQ     setg
         J       neq
-pr      JSUB    setclr        
+setr    JSUB    setclrr
+        J       neq
+setg    JSUB    setclrg               
 neq     LDCH    @out
 	WD	#1      . 1 is the device code for STDOUT
         JSUB    remdec
