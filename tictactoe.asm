@@ -236,7 +236,7 @@ setclrg  LDA     #27
         WD      #1
         RSUB
 
-setclrr  LDA     #27
+setclrr LDA     #27
         WD      #1
         LDA     #91
         WD      #1
@@ -372,10 +372,10 @@ nch     LDX     #1
         COMP    #79
         JEQ     seto1
         J       nch1
-setx1    LDA     #49
+setx1   LDA     #49
         J       ch1
-seto1    LDA     #50             
-ch1      STCH    coldec,X 
+seto1   LDA     #50             
+ch1     STCH    coldec,X 
         ADDR    B,X 
         STCH    coldec,X
         SUBR    B,X
@@ -387,15 +387,15 @@ nch1    LDX     #2
         LDCH    grdst,X
         LDX     #10
         STCH    temp0,X
-         AND     #255
+        AND     #255
         COMP    #88
         JEQ     setx2
         COMP    #79
         JEQ     seto2
         J       nch2
-setx2    LDA     #49
+setx2   LDA     #49
         J       ch2
-seto2    LDA     #50             
+seto2   LDA     #50             
 ch2     STCH    coldec,X 
         ADDR    B,X 
         STCH    coldec,X
@@ -411,7 +411,7 @@ nch2    LDA     #temp0
         LDB     clen
         LDA     #48
     
-rloop1   STCH    coldec,X
+rloop1  STCH    coldec,X
         TIXR    B
         JLT     rloop1 
         RSUB   
